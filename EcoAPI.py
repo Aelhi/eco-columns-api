@@ -9,14 +9,14 @@ import string
 from gspread.exceptions import NoValidUrlKeyFound, APIError
 
 
-cred_path = ("D:\Code\Eco Column\ecoServiceAccount.json") # Fix to use environment var
+cred_path = ("x") # Fix to use environment var
 
 cred = credentials.Certificate(cred_path)
 app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file("D:\Code\Eco Column\credentials.json", scopes=scopes) # Export from project
+creds = Credentials.from_service_account_file("x", scopes=scopes) # Export from project
 client = gspread.authorize(creds)
 
 app = FastAPI()
