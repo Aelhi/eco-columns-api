@@ -7,16 +7,37 @@ import gspread
 from google.oauth2.service_account import Credentials
 import string
 from gspread.exceptions import NoValidUrlKeyFound, APIError
+import os
+import json
+from dotenv import load_dotenv
 
 
-cred_path = ("x") # Fix to use environment var
+load_dotenv()
 
-cred = credentials.Certificate(cred_path)
+
+# For Render deployment - use environment variables
+# If the credentials are stored as environment variables containing the JSON content
+if os.environ.get("FIREBASE_CREDENTIALS"):
+    # Parse the JSON string from environment variable
+    cred_dict = json.loads(os.environ.get("FIREBASE_CREDENTIALS"))
+    cred = credentials.Certificate(cred_dict)
+# For local development - use the file path
+else:
+    cred_path = os.environ.get("FIREBASE_CREDENTIALS_PATH")
+    cred = credentials.Certificate(cred_path)
+
 app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-scopes = ["https://www.googleapis.com/auth/spreadsheets"]
-creds = Credentials.from_service_account_file("x", scopes=scopes) # Export from project
+# Similar approach for Google Sheets credentials
+if os.environ.get("GOOGLE_CREDENTIALS"):
+    # Parse the JSON string from environment variable
+    google_creds_dict = json.loads(os.environ.get("GOOGLE_CREDENTIALS"))
+    creds = Credentials.from_service_account_info(google_creds_dict, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+else:
+    google_creds_path = os.environ.get("GOOGLE_CREDENTIALS_PATH")
+    creds = Credentials.from_service_account_file(google_creds_path, scopes=["https://www.googleapis.com/auth/spreadsheets"])
+    
 client = gspread.authorize(creds)
 
 app = FastAPI()
